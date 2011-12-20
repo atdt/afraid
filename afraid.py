@@ -26,9 +26,7 @@
 #    --interval seconds  update interval, in seconds (default: 600)
 
 import argparse
-import collections
 import hashlib
-import json
 import logging
 import re
 import sys
@@ -99,15 +97,12 @@ def update_continuously(records, update_interval=600):
         for record in records:
             try:
                 record.update()
-            except (ApiError, RequestException) as e:
+            except (ApiError, RequestException):
                 pass
         time.sleep(update_interval)
 
 
-def main():
-
-    # ------------------------------------------------- command-line arguments
-
+def parse_args():
     parser = argparse.ArgumentParser(description='afraid.org dyndns client')
 
     ## positional arguments
@@ -145,7 +140,11 @@ def main():
         type=int
     )
 
-    options = parser.parse_args()
+    return parser.parse_args()
+
+
+def main():
+    options = parse_args()
 
     # configure logging
     logging.basicConfig(
@@ -156,6 +155,7 @@ def main():
     )
 
     records = get_dyndns_records(options.user, options.password)
+
     if options.hosts:
         records = frozenset(record for record in records
                 if record.hostname in options.hosts)
