@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import unittest
 import afraid
 
@@ -45,7 +48,7 @@ class AfraidTestCase(unittest.TestCase):
         self.assertEquals(kwargs, {
             'params': {
                 'action': 'getdyndns', 
-                'sha': '85c62448c530781b9d33490b6b06873e05a1b680'
+                'sha': afraid.get_auth_key('wintermute', 'secret'),
             }
         })
 
@@ -56,6 +59,35 @@ class AfraidTestCase(unittest.TestCase):
             self.assertIsNotNone(record)
             self.assertEquals(record.ip, ip)
             self.assertEquals(record.update_url, update_url)
+
+    def test_argument_parsing(self):
+        arg_string = '--interval 10 -d root s3cr3t my.foo.com my.bar.net'
+        args = afraid.parse_args(args=arg_string.split())
+
+        self.assertEquals(args.interval, 10)
+        self.assertTrue(args.daemonize)
+        self.assertEquals(args.hosts, ['my.foo.com', 'my.bar.net'])
+        self.assertEquals(args.user, 'root')
+        self.assertEquals(args.password, 's3cr3t')
+
+
+class DnsRecordTestCase(unittest.TestCase):
+    def setUp(self):
+        self.record = afraid.DnsRecord('localhost', '8.8.8.8', 'abc.com')
+
+    def test_cmp(self):
+        # same hostname -> compare as equal
+        same_hostname = afraid.DnsRecord('localhost', '8.8.4.4', 'xyz.net')
+        self.assertEquals(self.record, same_hostname)
+
+        # different hostname -> compare as unequal
+        diff_hostname= afraid.DnsRecord('otherhost', '8.8.8.8', 'abc.com')
+        self.assertNotEquals(self.record, diff_hostname)
+
+    def test_hashing(self):
+        mapping = {self.record: 'a record!'}
+        self.assertIn(self.record, mapping)
+        self.assertEquals(mapping[self.record], 'a record!')
 
 
 if __name__ == '__main__':
