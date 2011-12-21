@@ -36,21 +36,30 @@ import daemon
 import requests
 
 
+# a session object that will execute our requests
 http = requests.session(config={'verbose': sys.stderr}, timeout=2)
+
+# a basic ipv4 regex pattern
 ip_pattern = re.compile(r'[0-9]+(?:\.[0-9]+){3}')
+
 RequestException = requests.RequestException
 
 
 class ApiError(Exception):
+    """Custom exception type for API-related failures"""
+
     pass
 
 
 class DnsRecord(object):
+    """Represents a dynamic dns record"""
 
     def __hash__(self):
+        """DnsRecord objects hash on their hostname"""
         return hash(self.hostname)
 
     def __cmp__(self, other):
+        """DnsRecord objects compare on their hostname"""
         return cmp(self.hostname, getattr(other, 'hostname', None))
 
     def __init__(self, hostname, ip, update_url):
@@ -62,6 +71,7 @@ class DnsRecord(object):
         return '<DnsRecord: {.hostname}>'.format(self)
 
     def update(self):
+        """Updates remote DNS record by requesting its special endpoint URL"""
         response = http.get(self.update_url)
         match = ip_pattern.search(response.content)
 
@@ -74,11 +84,13 @@ class DnsRecord(object):
 
 
 def get_auth_key(*credentials):
+    """Builds an auth key, which is the SHA1 hash of the string 'user|pass'"""
     auth_string = '|'.join(credentials)
     return hashlib.sha1(auth_string).hexdigest()
 
 
 def get_dyndns_records(login, password):
+    """Gets the set of dynamic DNS records associated with this account"""
     params = dict(action='getdyndns', sha=get_auth_key(login, password))
     response = http.get('http://freedns.afraid.org/api/', params=params)
     raw_records = (line.split('|') for line in response.content.split())
@@ -93,6 +105,7 @@ def get_dyndns_records(login, password):
 
 
 def update_continuously(records, update_interval=600):
+    """Update `records` every `update_interval` seconds"""
     while True:
         for record in records:
             try:
@@ -103,6 +116,7 @@ def update_continuously(records, update_interval=600):
 
 
 def parse_args(args=None):
+    """Parse command-line arguments"""
     parser = argparse.ArgumentParser(description='afraid.org dyndns client')
 
     ## positional arguments
