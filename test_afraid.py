@@ -6,6 +6,7 @@ import afraid
 
 
 class DummyHttp(object):
+    """Mock `requests` object for testing purposes"""
 
     def __init__(self):
         self.content = None
@@ -88,6 +89,17 @@ class DnsRecordTestCase(unittest.TestCase):
         mapping = {self.record: 'a record!'}
         self.assertIn(self.record, mapping)
         self.assertEquals(mapping[self.record], 'a record!')
+
+
+def suite():
+    """The complete afraid.py test suite"""
+    suite = unittest.TestSuite()
+    suite.addTests((
+        DnsTestCase,
+        AfraidTestCase,
+    ))
+
+    return suite  
 
 
 if __name__ == '__main__':
