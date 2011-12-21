@@ -51,7 +51,7 @@ class DnsRecord(object):
         return hash(self.hostname)
 
     def __cmp__(self, other):
-        return self.hostname.__cmp__(getattr(other, 'hostname', None))
+        return cmp(self.hostname, getattr(other, 'hostname', None))
 
     def __init__(self, hostname, ip, update_url):
         self.hostname = hostname
@@ -102,7 +102,7 @@ def update_continuously(records, update_interval=600):
         time.sleep(update_interval)
 
 
-def parse_args():
+def parse_args(args=None):
     parser = argparse.ArgumentParser(description='afraid.org dyndns client')
 
     ## positional arguments
@@ -140,7 +140,7 @@ def parse_args():
         type=int
     )
 
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
 def main():
