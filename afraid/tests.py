@@ -91,16 +91,5 @@ class DnsRecordTestCase(unittest.TestCase):
         self.assertEquals(mapping[self.record], 'a record!')
 
 
-def suite():
-    """The complete afraid.py test suite"""
-    suite = unittest.TestSuite()
-    suite.addTests((
-        DnsTestCase,
-        AfraidTestCase,
-    ))
-
-    return suite  
-
-
 if __name__ == '__main__':
     unittest.main()
