@@ -12,6 +12,7 @@ The development version is available at `GitHub
 there.
 """
 import sys
+import os
 
 try:
     from setuptools import setup
@@ -19,13 +20,9 @@ except ImportError:
     from distutils.core import setup
 
 
-
 if sys.argv[-1] == 'publish':
     os.system("python setup.py sdist upload")
     sys.exit()
-
-
-
 
 
 setup(
@@ -53,5 +50,6 @@ setup(
         'Topic :: System :: Systems Administration',
     ),
     install_requires=('requests>=0.8.6', 'python-daemon>=1.5.5'),
+    url='https://github.com/atdt/afraid',
     test_suite = 'afraid.tests',
 )
