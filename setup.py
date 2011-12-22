@@ -11,15 +11,22 @@ The development version is available at `GitHub
 <https://github.com/atdt/afraid>`_. Issues should be documented
 there.
 """
+import sys
+
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
 
-deps = [
-    'requests>=0.8.6',
-    'python-daemon>=1.5.5',
-]
+
+
+if sys.argv[-1] == 'publish':
+    os.system("python setup.py sdist upload")
+    sys.exit()
+
+
+
+
 
 setup(
     name='afraid',
@@ -45,6 +52,6 @@ setup(
         'Topic :: Internet :: Name Service (DNS)',
         'Topic :: System :: Systems Administration',
     ),
-    install_requires=deps,
+    install_requires=('requests>=0.8.6', 'python-daemon>=1.5.5'),
     test_suite = 'afraid.tests',
 )
