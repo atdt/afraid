@@ -35,9 +35,8 @@ import time
 import daemon
 import requests
 
-
-# a session object that will execute our requests
-http = requests.session(config={'verbose': sys.stderr}, timeout=2)
+# Set timeout for HTTP requests
+timeout = 2
 
 # a basic ipv4 regex pattern
 ip_pattern = re.compile(r'[0-9]+(?:\.[0-9]+){3}')
@@ -72,10 +71,10 @@ class DnsRecord(object):
 
     def update(self):
         """Updates remote DNS record by requesting its special endpoint URL"""
-        response = http.get(self.update_url)
+        response = requests.get(self.update_url, timeout=timeout)
         match = ip_pattern.search(response.content)
 
-        # response must contain an ip address, or else we can't parse it
+        # respult must contain an ip address, or else we can't parse it
         if not match:
             raise ApiError("Couldn't parse the server's response",
                     response.content)
@@ -92,7 +91,7 @@ def get_auth_key(*credentials):
 def get_dyndns_records(login, password):
     """Gets the set of dynamic DNS records associated with this account"""
     params = dict(action='getdyndns', sha=get_auth_key(login, password))
-    response = http.get('http://freedns.afraid.org/api/', params=params)
+    response = requests.get('http://freedns.afraid.org/api/', params=params, timeout=timeout)
     raw_records = (line.split('|') for line in response.content.split())
 
     try:
