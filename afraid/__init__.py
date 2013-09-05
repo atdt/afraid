@@ -74,7 +74,7 @@ class DnsRecord(object):
         response = requests.get(self.update_url, timeout=timeout)
         match = ip_pattern.search(response.content)
 
-        # respult must contain an ip address, or else we can't parse it
+        # response must contain an ip address, or else we can't parse it
         if not match:
             raise ApiError("Couldn't parse the server's response",
                     response.content)
