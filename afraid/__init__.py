@@ -147,9 +147,9 @@ def parse_args(args=None):
 
     # how long to sleep between updates
     parser.add_argument('--interval',
-        help='update interval, in seconds (default: 600)',
+        help='update interval, in seconds (default: 21600)',
         metavar='seconds',
-        default=600,
+        default=6 * 60 * 60, # 6 hours
         type=int
     )
 
